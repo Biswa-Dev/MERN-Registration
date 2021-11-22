@@ -1,6 +1,7 @@
 require('dotenv').config({path:'./.env'});
 const mongoose = require('mongoose');
 const express = require('express');
+const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT;
 
 const app = express();
@@ -12,6 +13,8 @@ const User = require('./models/userschema');
 
 //middleware method inbuilt in express to recognize the incoming Request Object as a JSON Object.
 app.use(express.json());
+
+app.use(cookieParser());
 
 //We link the router file to make our route easy
 app.use(require('./router/auth'));

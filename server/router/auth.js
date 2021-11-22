@@ -104,10 +104,43 @@ router.post("/login",async(req,res)=>{
 });
 
 router.get("/about",authenticate,(req,res)=>{
-    console.log(req.rootUser);
+    console.log("About req recived from client to server.");
     res.send(req.rootUser);
 });
 
+router.get("/getdata",authenticate,(req,res)=>{
+    console.log("Contact req recived from client to server.");
+    res.send(req.rootUser);
+});
+
+router.post("/contact",authenticate, async (req,res) =>{
+    try{
+        const userId = req.userId;
+        const {name,email,phone,message} = req.body;
+        const contactUser = await User.findOne({_id: userId});
+        if(contactUser){
+            console.log("found contact user");
+            const userMessage = await contactUser.addMessage(name,email,phone,message);
+            if(userMessage){
+                res.status(201).json({message: "Message Sent Successfully."})
+            }else{
+                res.status(422).json({error: "Some thing went wrong while sending message"});
+            }
+        }else{
+            res.status(422).json({error: "Invalid User!"});
+        }
+    }catch(err){
+        console.log(err);
+    }
+    
+});
+
+router.get("/logout",authenticate,(req,res)=>{
+    console.log("inside logout router");
+    res.clearCookie('jwtoken',{path: '/'});
+    res.status(200).send("Successfully logout");
+    console.log("Successfully logout");
+});
 
 
 module.exports = router;
